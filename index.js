@@ -19,6 +19,7 @@ function paste(){
 function createNew(title, body){
   notes.push({title: title, body: body})
   localStorage.setItem('notes', JSON.stringify(notes))
+  window.scrollTo(0, 0)
   paste()
 }
 //deleting note
