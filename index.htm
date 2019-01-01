@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <script type="text/javascript">
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(function () {
+        console.log('Service worker successfully registered');
+      }).catch(function (err) {
+        console.error('Service worker failed to register', err);
+      });
+    } else {
+      console.log('Service workers not supported');
+    }
+    </script>
+    <link rel="shortcut icon" href="logo144.png" />
+    <script src="howler.js" charset="utf-8"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, height=device-height">
+    <meta charset="utf-8">
+    <script src="howler.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="index.css">
+    <title>Flurr Note</title>
+  </head>
+  <body>
+    <!-- alert -->
+    <div id="alert">
+      <div id="alert_box">
+        <div id="message"></div>
+        <button class="okay">Ok</button>
+      </div>
+    </div>
+    <!-- alert -->
+    <header>
+      <button class="deleteAll">Delete All</button>
+      <button class="write">Write New</button>
+    </header>
+    <!-- new note -->
+    <div class="tabcreatenew">
+      <button class="close">x</button>
+      <hr>
+      <input type="text" placeholder="Write new title" class="title">
+      <hr>
+      <textarea placeholder="Write new Note" class="body"></textarea>
+      <button class="create">Create</button>
+    </div>
+    <!-- new note -->
+
+    <div class="container"></div>
+    <!-- menu -->
+    <div id="all">
+      <div id="menu">
+        <span class="del">
+          Delete
+        </span>
+      </div>
+    </div>
+
+    <!-- note -->
+    <div class="note">
+      <button class="closenote">x</button>
+      <div class="edit"></div>
+      <div class="notetitle"></div>
+      <div class="notebody"></div>
+      <button class="submit">Submit</button>
+    </div>
+    <script src="index.js" charset="utf-8"></script>
+  </body>
+</html>
