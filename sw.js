@@ -1,7 +1,7 @@
 const version = '1.3.8';
 const staticCache = `static-${version}`;
 const dynamicCache = 'dynamic'
-let filesToCache = [
+const filesToCache = [
   'index.htm',
   'note.css',
   'note.js',
