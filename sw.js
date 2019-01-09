@@ -17,7 +17,8 @@ let filesToCache = [
   'howler.js',
   'buttonpress.mp4',
   'buttonpress1.mp4',
-  'edit.png'
+  'edit.png',
+  'logo144.png'
 ]
 
 
