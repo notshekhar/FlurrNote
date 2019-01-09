@@ -1,8 +1,10 @@
-var cache_name = 'note'
-var filesToCache = [
+const version = '1.3.8';
+const staticCache = `static-${version}`;
+const dynamicCache = 'dynamic'
+let filesToCache = [
   'index.htm',
-  'index.css',
-  'index.js',
+  'note.css',
+  'note.js',
   'add.svg',
   'flurr.ttf',
   'list.svg',
@@ -17,57 +19,40 @@ var filesToCache = [
   'buttonpress1.mp4',
   'edit.png'
 ]
-self.addEventListener('install', function(event) {
-  function onInstall () {
-    console.log('Service worker installation', cache_name)
-    return caches.open(cache_name)
-      .then(function(cache) {
-        console.log('Caching pre-defined assets on installation...', filesToCache)
-        return cache.addAll(filesToCache)
-      });
-  }
-  event.waitUntil(onInstall(event))
-})
 
-self.addEventListener('fetch', function(event) {
-  var responsePromise = fetch(event.request)
-    .then(function(response) {
-      if (!response || !response.ok) {
-        return response
-      }
-      var responseToCache = response.clone()
-      caches.open(cache_name)
-        .then(function(cache) {
-          cache.put(event.request, responseToCache)
-        });
-      return response
-    })
-    .catch(function(err) {
-      console.log('Fetch failed, maybe we are offline. Try cache...', err)
-      return caches.match(event.request)
-        .then(function(response) {
-          if (response) {
-            console.log('Cache hit', event.request)
-            return response;
-          } else {
-            console.log('Offline cache miss =(')
-          }
-        });
-    });
-  event.respondWith(responsePromise)
+
+
+addEventListener('install', (event) => {
+  skipWaiting();
+  event.waitUntil(async function () {
+    const cache = await caches.open(staticCache);
+    await cache.addAll(filesToCache);
+  }());
 });
 
-self.addEventListener('activate', function(event) {
-  var cacheWhitelist = [cache_name]
-  event.waitUntil(
-    caches.keys(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheWhitelist.indexOf(cacheName) == -1) {
-            return caches.delete(cacheName)
-          }
-        })
-      )
-    })
-  )
-})
+addEventListener('activate', (event) => {
+  event.waitUntil(async function () {
+    // Remove old caches
+    for (const cacheName of await caches.keys()) {
+      if (!cacheName.startsWith('podcast-') && cacheName !== staticCache && cacheName !== dynamicCache) {
+        await caches.delete(cacheName);
+      }
+    }
+
+    // A pretty harsh way to handle updates, but it's just a demo.
+    for (const client of await clients.matchAll()) {
+      client.navigate(client.url);
+    }
+  }());
+});
+
+addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  // Skip the service worker for the feed. The page handles the caching.
+  if (url.origin === location.origin && url.pathname === '/feed') return;
+  event.respondWith(async function () {
+    // Offline first:
+    const cachedResponse = await caches.match(event.request);
+    return cachedResponse || fetch(event.request);
+  }());
+});
